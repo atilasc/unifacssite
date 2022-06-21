@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.shortcuts import redirect
 
 import firebase_admin
 from firebase_admin import credentials
@@ -28,19 +29,67 @@ db = firestore.client()
 def index(request):
     docs = db.collection("cliente").stream()
 
-    id = []
-    nome = []
     teste = []
     for doc in docs:
-        id.append(doc.id)
-        nome.append(doc.get('nome'))
         teste.append((doc.id, doc.get('nome')))
         # print(doc.id, doc, doc.get('nome'), doc.to_dict())
 
     context = {
-        'id': id,
-        'nome': nome,
         'teste':teste
     }
 
     return render(request, 'index.html', context)
+
+def create_view(request):
+
+    nome = request.POST.get("nome", "")
+
+    doc_ref = db.collection("cliente")
+
+    doc_ref.add({
+        "nome":nome
+    })
+
+    return redirect('/')
+
+def delete(request):
+
+    id = request.POST.get("id", "")
+
+    doc_ref = db.collection("cliente")
+
+    doc_ref.document(id).delete()
+
+    return redirect('/')
+
+def edit(request):
+
+    id = request.POST.get("id", "")
+
+    doc_ref = db.collection("cliente").document(id).get()
+
+    docs = db.collection("cliente").stream()
+
+    teste = []
+    for doc in docs:
+        teste.append((doc.id, doc.get('nome')))
+        # print(doc.id, doc, doc.get('nome'), doc.to_dict())
+
+    context = {
+        'teste':teste,
+         'editNome': doc_ref.get('nome'),
+         'editId': request.POST.get("id", ""),
+    }
+
+    return render(request, 'index.html', context)
+
+def salvar(request):
+
+    id = request.POST.get("id", "")
+    alteracao = request.POST.get("nome", "")
+
+    doc_ref = db.collection("cliente")
+
+    doc_ref.document(id).update({"nome":alteracao})
+
+    return redirect('/')

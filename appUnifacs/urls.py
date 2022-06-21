@@ -20,4 +20,8 @@ from fireapp import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.index, name='index'),
+    path('create_view/', views.create_view, name='create_view'),
+    path('delete/', views.delete, name='delete'),
+    path('edit/', views.edit, name='edit'),
+    path('salvar/', views.salvar, name='salvar'),
 ]

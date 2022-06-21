@@ -21,10 +21,20 @@
 </head>
 
 <body>
-    <form action="{% url 'fireapp:create' %}" method="post">
-        <input type="text" name="nome" id="nome">
-        <button type="button" class="btn btn-primary " style="margin: 2% 0% 0% 2%;">Cadastrar</button>
+    {% if editNome %}
+    <form action="{% url 'salvar' %}" method="post">
+        {% csrf_token %}
+        <input type="text" name="nome" id="nome" value="{{editNome}}">
+        <input type="hidden" value="{{ editId }}" name="id" id="id">
+        <button type="submit" class="btn btn-primary " style="margin: 2% 0% 0% 2%;">Salvar</button>
     </form>
+    {% else %}
+    <form action="{% url 'create_view' %}" method="post">
+        {% csrf_token %}
+        <input type="text" name="nome" id="nome">
+        <button type="submit" class="btn btn-primary " style="margin: 2% 0% 0% 2%;">Cadastrar</button>
+    </form>
+    {% endif %}
 
     <table class="table">
         <thead>
@@ -42,8 +52,16 @@
                     <th scope="row">{{id}}</th>
                     <td>{{nome}}</td>
                     <td>
-                        <button type="button" class="btn btn-danger" style="margin: 2% 0% 0% 2%;">Apagar</button>
-                        <button type="button" class="btn btn-warning" style="margin: 2% 0% 0% 2%;">Editar</button>
+                        <form action="{% url 'delete' %}" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" value="{{ id }}" name="id">
+                            <button type="submit" class="btn btn-danger" style="margin: 2% 0% 0% 2%;">Apagar</button>
+                        </form>
+                        <form action="{% url 'edit' %}" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" value="{{ id }}" name="id">
+                            <button type="submit" class="btn btn-warning" style="margin: 2% 0% 0% 2%;">Editar</button>
+                        </form>
                     </td>
                 </tr>
                 {% endfor %}
